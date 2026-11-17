@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BookMyShow-Style Movie Ticket Booking System | AOOP Section A7 Group 13</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0b0f19;
+      --card-bg: #131b2e;
+      --card-border: #23314f;
+      --accent-red: #e50914;
+      --accent-red-hover: #f40612;
+      --accent-blue: #3b82f6;
+      --accent-gold: #f59e0b;
+      --accent-green: #10b981;
+      --accent-purple: #8b5cf6;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --seat-free: #334155;
+      --seat-free-hover: #475569;
+      --seat-held: #d97706;
+      --seat-sold: #ef4444;
+      --seat-selected: #10b981;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: rgba(19, 27, 46, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--card-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 1rem 2rem;
+    }
+
+    .nav-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-logo {
+      background: linear-gradient(135deg, #e50914, #ff5722);
+      color: white;
+      font-weight: 800;
+      font-size: 1.25rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 8px;
+      letter-spacing: -0.5px;
+      box-shadow: 0 4px 12px rgba(229, 9, 20, 0.35);
+    }
+
+    .brand-info h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .brand-info p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .badge-group {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.25rem 0.65rem;
+      border-radius: 9999px;
+      border: 1px solid transparent;
+    }
+
+    .badge-blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border-color: rgba(59, 130, 246, 0.3); }
+    .badge-purple { background: rgba(139, 92, 246, 0.15); color: #a78bfa; border-color: rgba(139, 92, 246, 0.3); }
+    .badge-green { background: rgba(16, 185, 129, 0.15); color: #34d399; border-color: rgba(16, 185, 129, 0.3); }
+
+    main {
+      flex: 1;
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2rem;
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 2rem;
+    }
+
+    @media (max-width: 1024px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Left Column: Cinema Layout & Controls */
+    .cinema-panel {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    }
+
+    .movie-banner {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 1.25rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .movie-meta h2 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 0.25rem;
+      color: #fff;
+    }
+
+    .movie-meta p {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    .screen-curve-container {
+      margin: 1.5rem auto 2.5rem;
+      text-align: center;
+      width: 85%;
+    }
+
+    .screen-curve {
+      height: 12px;
+      border-top: 4px solid #60a5fa;
+      border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+      box-shadow: 0 -8px 24px rgba(96, 165, 250, 0.45);
+      position: relative;
+    }
+
+    .screen-label {
+      margin-top: 0.5rem;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .legend {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+      font-size: 0.8rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .legend-box {
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+    }
+
+    .grid-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      align-items: center;
+    }
+
+    .seat-category-row {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      width: 100%;
+    }
+
+    .category-header {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .seats-row {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .seat-btn {
+      width: 44px;
+      height: 40px;
+      border-radius: 8px;
+      background: var(--seat-free);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+
+    .seat-btn:hover:not(:disabled) {
+      background: var(--seat-free-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .seat-btn.selected {
+      background: var(--seat-selected) !important;
+      border-color: #34d399 !important;
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.5);
+    }
+
+    .seat-btn.held {
+      background: var(--seat-held) !important;
+      border-color: #f59e0b !important;
+      cursor: not-allowed;
+      animation: pulse 1.5s infinite;
+    }
+
+    .seat-btn.sold {
+      background: var(--seat-sold) !important;
+      border-color: #f87171 !important;
+      opacity: 0.6;
+      cursor: not-allowed;
+      text-decoration: line-through;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    .seat-timer {
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: #fef08a;
+      position: absolute;
+      bottom: 2px;
+    }
+
+    /* Right Column: Saga & Booking Summary */
+    .sidebar-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 0.75rem;
+    }
+
+    .pattern-tag {
+      font-size: 0.7rem;
+      background: rgba(59, 130, 246, 0.2);
+      color: #93c5fd;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+      display: block;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    select, input[type="text"] {
+      width: 100%;
+      background: #1e293b;
+      border: 1px solid var(--card-border);
+      color: #fff;
+      padding: 0.65rem 0.85rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    select:focus, input[type="text"]:focus {
+      border-color: var(--accent-blue);
+    }
+
+    .combos-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .combo-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #1a233a;
+      border: 1px solid var(--card-border);
+      padding: 0.65rem 0.85rem;
+      border-radius: 8px;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.2s;
+    }
+
+    .combo-item:hover {
+      background: #222f4d;
+    }
+
+    .combo-item input {
+      margin-right: 0.65rem;
+      accent-color: var(--accent-red);
+      cursor: pointer;
+    }
+
+    .combo-info {
+      display: flex;
+      align-items: center;
+    }
+
+    .combo-name {
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .combo-price {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #34d399;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .order-summary {
+      background: #0f172a;
+      border-radius: 10px;
+      padding: 1rem;
+      margin-top: 1rem;
+      border: 1px solid var(--card-border);
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      margin-bottom: 0.5rem;
+      color: var(--text-muted);
+    }
+
+    .summary-row.total {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #fff;
+      border-top: 1px solid var(--card-border);
+      padding-top: 0.65rem;
+      margin-top: 0.65rem;
+      margin-bottom: 0;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 0.8rem;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--accent-red);
+      color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--accent-red-hover);
+      box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4);
+    }
+
+    .btn-secondary {
+      background: #2563eb;
+      color: white;
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: #1d4ed8;
+    }
+
+    .btn-warning {
+      background: #d97706;
+      color: white;
+    }
+
+    .btn-danger {
+      background: #dc2626;
+      color: white;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .saga-stepper {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+      position: relative;
+    }
+
+    .saga-stepper::before {
+      content: '';
+      position: absolute;
+      top: 14px;
+      left: 15px;
+      right: 15px;
+      height: 2px;
+      background: var(--card-border);
+      z-index: 1;
+    }
+
+    .saga-step {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .step-circle {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #1e293b;
+      border: 2px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      transition: all 0.3s;
+    }
+
+    .saga-step.active .step-circle {
+      background: var(--accent-blue);
+      border-color: #60a5fa;
+      color: white;
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+    }
+
+    .saga-step.completed .step-circle {
+      background: var(--accent-green);
+      border-color: #34d399;
+      color: white;
+    }
+
+    .step-label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .saga-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .terminal-box {
+      background: #090d16;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 0.85rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: #cbd5e1;
+      height: 140px;
+      overflow-y: auto;
+      margin-top: 1rem;
+    }
+
+    .terminal-line {
+      margin-bottom: 0.25rem;
+    }
+
+    .terminal-line.success { color: #34d399; }
+    .terminal-line.warn { color: #f59e0b; }
+    .terminal-line.error { color: #f87171; }
+    .terminal-line.info { color: #60a5fa; }
+
+    /* Modal Ticket */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .ticket-card {
+      background: #1e293b;
+      border: 2px dashed #475569;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 480px;
+      padding: 2rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+      position: relative;
+    }
+
+    .ticket-header {
+      text-align: center;
+      border-bottom: 2px dashed #475569;
+      padding-bottom: 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .ticket-header h3 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #34d399;
+      margin-bottom: 0.25rem;
+    }
+
+    .ticket-body {
+      font-size: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .ticket-row {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .ticket-row .label {
+      color: var(--text-muted);
+    }
+
+    .ticket-row .val {
+      font-weight: 600;
+    }
+
+    footer {
+      background: #090d16;
+      border-top: 1px solid var(--card-border);
+      padding: 1.5rem 2rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .tab-bar {
+      display: flex;
+      border-bottom: 1px solid var(--card-border);
+      margin-bottom: 1.5rem;
+    }
+
+    .tab-btn {
+      padding: 0.75rem 1.25rem;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-weight: 600;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      color: #60a5fa;
+      border-bottom-color: #60a5fa;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="nav-container">
+      <div class="brand">
+        <div class="brand-logo">BMS</div>
+        <div class="brand-info">
+          <h1>Movie Ticket Booking System</h1>
+          <p>BookMyShow-Style AOOP Course Project (Section A7 · Group 13)</p>
+        </div>
+      </div>
+      <div class="badge-group">
+        <span class="badge badge-blue">Java 17 & DDD</span>
+        <span class="badge badge-purple">U1–U7 Units Verified</span>
+        <span class="badge badge-green">36/36 Tests Passing</span>
+        <a href="https://github.com/karanamabhinaysai-gif/A7_AOOP_G13_PROJ" target="_blank" style="text-decoration:none;">
+          <span class="badge badge-blue" style="cursor:pointer;">GitHub Repo ↗</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN VIEW -->
+  <main>
+    <!-- LEFT PANEL: AUDITORIUM SEATING GRID -->
+    <div class="cinema-panel">
+      <div class="movie-banner">
+        <div class="movie-meta">
+          <h2>Avatar: The Way of Water (IMAX 3D)</h2>
+          <p>Sci-Fi / Adventure · 3h 12m · UA · English & 3D Laser Projection</p>
+          <p style="margin-top: 0.25rem; color: #60a5fa; font-size: 0.8rem;">
+            📍 PVR INOX Gold, Bengaluru | Screen: IMAX Laser Auditorium 1
+          </p>
+        </div>
+        <div style="text-align: right;">
+          <span class="badge badge-purple" id="occupancyBadge">Occupancy: 0%</span>
+        </div>
+      </div>
+
+      <!-- SCREEN -->
+      <div class="screen-curve-container">
+        <div class="screen-curve"></div>
+        <div class="screen-label">Cinema Screen This Way</div>
+      </div>
+
+      <!-- LEGEND -->
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-box" style="background: var(--seat-free);"></div>
+          <span>Available (Free)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-box" style="background: var(--seat-selected);"></div>
+          <span>Selected</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-box" style="background: var(--seat-held);"></div>
+          <span>Held (Saga Step 1)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-box" style="background: var(--seat-sold);"></div>
+          <span>Sold (Terminal)</span>
+        </div>
+      </div>
+
+      <!-- SEAT GRID -->
+      <div class="grid-container" id="seatGrid">
+        <!-- Injected via JavaScript -->
+      </div>
+
+      <!-- FDFS CONCURRENT RUSH ARENA (U6) -->
+      <div style="background: #182238; border: 1px solid var(--card-border); border-radius: 12px; padding: 1.25rem; margin-top: 1rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.75rem;">
+          <div>
+            <h4 style="font-size: 0.95rem; font-weight:700;">⚡ U6: First-Day-First-Show (FDFS) Concurrent Rush Arena</h4>
+            <p style="font-size: 0.75rem; color: var(--text-muted);">Simulate 16 concurrent users fighting for overlapping seats (A3, A4, B1) simultaneously.</p>
+          </div>
+          <button class="btn btn-secondary" style="width: auto; padding: 0.5rem 1rem; font-size: 0.8rem;" id="btnRush">
+            Launch Concurrent Rush
+          </button>
+        </div>
+        <div class="terminal-box" id="terminal">
+          <div class="terminal-line info">[System ready] Select seats on the grid to begin booking or launch FDFS rush.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL: SAGA, PRICING & COMBOS -->
+    <div class="sidebar-panel">
+
+      <!-- SAGA WORKFLOW CARD -->
+      <div class="card">
+        <div class="card-title">
+          <span>Booking Saga Orchestrator</span>
+          <span class="pattern-tag">U5 Saga Flow</span>
+        </div>
+
+        <div class="saga-stepper">
+          <div class="saga-step active" id="step1">
+            <div class="step-circle">1</div>
+            <div class="step-label">Hold</div>
+          </div>
+          <div class="saga-step" id="step2">
+            <div class="step-circle">2</div>
+            <div class="step-label">Pay</div>
+          </div>
+          <div class="saga-step" id="step3">
+            <div class="step-circle">3</div>
+            <div class="step-label">Confirm</div>
+          </div>
+        </div>
+
+        <!-- PRICING STRATEGY -->
+        <div class="form-group">
+          <label class="form-label">Pricing Strategy <span class="pattern-tag">U4 Strategy</span></label>
+          <select id="pricingStrategySelect">
+            <option value="standard">Standard Base Pricing</option>
+            <option value="weekend">Weekend Surcharge (+25%)</option>
+            <option value="surge" selected>Demand-Based Surge (+10% to +50%)</option>
+          </select>
+        </div>
+
+        <!-- FOOD COMBOS (DECORATOR PATTERN) -->
+        <div class="form-group">
+          <label class="form-label">Add-on Food Combos <span class="pattern-tag">U4 Decorator</span></label>
+          <div class="combos-list">
+            <label class="combo-item">
+              <div class="combo-info">
+                <input type="checkbox" id="comboPopcorn">
+                <span class="combo-name">🍿 Jumbo Caramel Popcorn</span>
+              </div>
+              <span class="combo-price">+₹ 280.00</span>
+            </label>
+            <label class="combo-item">
+              <div class="combo-info">
+                <input type="checkbox" id="comboCoke">
+                <span class="combo-name">🥤 Large Chilled Beverage</span>
+              </div>
+              <span class="combo-price">+₹ 150.00</span>
+            </label>
+            <label class="combo-item">
+              <div class="combo-info">
+                <input type="checkbox" id="comboNachos">
+                <span class="combo-name">🧀 Salsa & Cheese Nachos</span>
+              </div>
+              <span class="combo-price">+₹ 220.00</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- CART SUMMARY -->
+        <div class="order-summary">
+          <div class="summary-row">
+            <span>Selected Seats:</span>
+            <span id="summarySeats" style="font-weight:600; color:#fff;">None</span>
+          </div>
+          <div class="summary-row">
+            <span>Base Ticket Price:</span>
+            <span id="summaryBasePrice">₹ 0.00</span>
+          </div>
+          <div class="summary-row">
+            <span>Pricing Multiplier:</span>
+            <span id="summaryMultiplier">1.0x (Standard)</span>
+          </div>
+          <div class="summary-row">
+            <span>Food & Combos:</span>
+            <span id="summaryCombos">₹ 0.00</span>
+          </div>
+          <div class="summary-row total">
+            <span>Grand Total:</span>
+            <span id="summaryTotal" style="color: #34d399;">₹ 0.00</span>
+          </div>
+        </div>
+
+        <!-- SAGA TRIGGER BUTTONS -->
+        <div style="margin-top: 1.25rem;">
+          <button class="btn btn-primary" id="btnHold" disabled>
+            🔒 Step 1: Hold Seats (10s Lock)
+          </button>
+        </div>
+
+        <div class="saga-actions" id="paymentActions" style="display: none;">
+          <button class="btn btn-secondary" id="btnPaySuccess">
+            💳 Step 2: Pay (Success)
+          </button>
+          <button class="btn btn-danger" id="btnPayFail">
+            ❌ Step 2: Pay (Decline)
+          </button>
+        </div>
+
+        <button class="btn btn-warning" id="btnTimeout" style="display: none; margin-top: 0.5rem;">
+          ⏱️ Simulate Payment Timeout (Release Hold)
+        </button>
+      </div>
+
+      <!-- DESIGN PATTERNS QUICK REFERENCE CARD -->
+      <div class="card" style="font-size: 0.8rem;">
+        <h4 style="font-size: 0.95rem; font-weight:700; margin-bottom: 0.5rem; color: #60a5fa;">
+          📘 Architecture Specifications (U1–U7)
+        </h4>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.4rem; color: var(--text-muted);">
+          <li>• <strong style="color:#fff;">U1-2:</strong> ShowId, SeatId, Money value objects; single-sale invariant.</li>
+          <li>• <strong style="color:#fff;">U3:</strong> Preconditions on holdSeats, expiry postcondition, sealed categories.</li>
+          <li>• <strong style="color:#fff;">U4:</strong> Decorator (Combos), Strategy (Surge), State (Free/Held/Sold).</li>
+          <li>• <strong style="color:#fff;">U5:</strong> Hold → Pay → Confirm Saga with compensating rollback.</li>
+          <li>• <strong style="color:#fff;">U6:</strong> Canonical seat sorting prevents lock-ordering deadlocks.</li>
+          <li>• <strong style="color:#fff;">U7:</strong> 4 Bounded Contexts: Catalog, Inventory, Booking, Payments.</li>
+        </ul>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- CONFIRMED TICKET MODAL -->
+  <div class="modal-overlay" id="ticketModal">
+    <div class="ticket-card">
+      <div class="ticket-header">
+        <h3>🎉 BOOKING CONFIRMED!</h3>
+        <p style="font-size: 0.8rem; color: var(--text-muted);">Your digital ticket has been issued.</p>
+      </div>
+      <div class="ticket-body">
+        <div class="ticket-row">
+          <span class="label">Booking Ref:</span>
+          <span class="val" id="ticketBookingId" style="font-family:'JetBrains Mono',monospace; color:#60a5fa;"></span>
+        </div>
+        <div class="ticket-row">
+          <span class="label">Movie:</span>
+          <span class="val">Avatar: The Way of Water (IMAX 3D)</span>
+        </div>
+        <div class="ticket-row">
+          <span class="label">Auditorium:</span>
+          <span class="val">IMAX Laser 1 (PVR INOX Gold)</span>
+        </div>
+        <div class="ticket-row">
+          <span class="label">Seats:</span>
+          <span class="val" id="ticketSeats" style="color:#34d399; font-weight:700;"></span>
+        </div>
+        <div class="ticket-row">
+          <span class="label">Add-ons:</span>
+          <span class="val" id="ticketCombos">None</span>
+        </div>
+        <div class="ticket-row" style="border-top: 1px solid var(--card-border); padding-top: 0.5rem; margin-top: 0.25rem;">
+          <span class="label" style="font-weight:700; color:#fff;">Total Amount Paid:</span>
+          <span class="val" id="ticketTotal" style="font-weight:800; color:#34d399; font-size:1.1rem;"></span>
+        </div>
+      </div>
+      <div style="margin-top: 1.5rem;">
+        <button class="btn btn-primary" onclick="closeModal()">Close & Book More Seats</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>KL University · Department of Computer Science & Engineering · Advanced Object-Oriented Programming (Section A7, Group 13)</p>
+    <p style="margin-top: 0.25rem; font-size: 0.75rem;">Developed by Abhinay Sai & Team · Powered by Java 17, Sealed Types, ReentrantLock, and DDD</p>
+  </footer>
+
+  <!-- JAVASCRIPT APPLICATION ENGINE -->
+  <script>
+    // SEED DATA & STATE
+    const SEAT_LAYOUT = [
+      { row: 'A', count: 6, category: 'PLATINUM', price: 400.00, label: 'VIP Platinum Recliner (Row A)' },
+      { row: 'B', count: 6, category: 'GOLD', price: 250.00, label: 'Executive Gold (Row B)' },
+      { row: 'C', count: 6, category: 'GOLD', price: 250.00, label: 'Executive Gold (Row C)' },
+      { row: 'D', count: 6, category: 'SILVER', price: 150.00, label: 'Classic Silver (Row D)' }
+    ];
+
+    // State of all seats: { 'A1': { state: 'FREE', heldBy: null, expiresAt: null, category, price } }
+    const seatDatabase = {};
+    const selectedSeatIds = new Set();
+    let currentHoldToken = null;
+    let holdTimerInterval = null;
+
+    // Initialize Database
+    SEAT_LAYOUT.forEach(tier => {
+      for (let i = 1; i <= tier.count; i++) {
+        const id = `${tier.row}${i}`;
+        seatDatabase[id] = {
+          id,
+          row: tier.row,
+          number: i,
+          category: tier.category,
+          price: tier.price,
+          state: 'FREE', // FREE, HELD, SOLD
+          heldBy: null,
+          expiresAt: null
+        };
+      }
+    });
+
+    // RENDER SEATING GRID
+    function renderSeats() {
+      const container = document.getElementById('seatGrid');
+      container.innerHTML = '';
+
+      SEAT_LAYOUT.forEach(tier => {
+        const rowWrapper = document.createElement('div');
+        rowWrapper.className = 'seat-category-row';
+
+        const header = document.createElement('div');
+        header.className = 'category-header';
+        header.innerHTML = `<span>${tier.label}</span> · <span style="color:#34d399;">₹ ${tier.price.toFixed(2)}</span>`;
+        rowWrapper.appendChild(header);
+
+        const seatsRow = document.createElement('div');
+        seatsRow.className = 'seats-row';
+
+        for (let i = 1; i <= tier.count; i++) {
+          const id = `${tier.row}${i}`;
+          const seat = seatDatabase[id];
+
+          const btn = document.createElement('button');
+          btn.className = `seat-btn ${seat.state.toLowerCase()}`;
+          if (selectedSeatIds.has(id)) btn.classList.add('selected');
+          btn.id = `seat-${id}`;
+
+          let timerHtml = '';
+          if (seat.state === 'HELD' && seat.expiresAt) {
+            const secLeft = Math.max(0, Math.ceil((seat.expiresAt - Date.now()) / 1000));
+            timerHtml = `<span class="seat-timer">${secLeft}s</span>`;
+          }
+
+          btn.innerHTML = `${id}${timerHtml}`;
+          btn.disabled = (seat.state === 'SOLD' || (seat.state === 'HELD' && !selectedSeatIds.has(id)));
+
+          btn.addEventListener('click', () => toggleSeatSelection(id));
+          seatsRow.appendChild(btn);
+        }
+
+        rowWrapper.appendChild(seatsRow);
+        container.appendChild(rowWrapper);
+      });
+
+      updateOccupancy();
+      updateBillSummary();
+    }
+
+    function toggleSeatSelection(seatId) {
+      const seat = seatDatabase[seatId];
+      if (seat.state === 'SOLD') return;
+      if (seat.state === 'HELD' && !selectedSeatIds.has(seatId)) return;
+
+      if (selectedSeatIds.has(seatId)) {
+        selectedSeatIds.delete(seatId);
+      } else {
+        selectedSeatIds.add(seatId);
+      }
+
+      renderSeats();
+    }
+
+    function logTerminal(message, type = 'info') {
+      const term = document.getElementById('terminal');
+      const time = new Date().toLocaleTimeString();
+      const line = document.createElement('div');
+      line.className = `terminal-line ${type}`;
+      line.innerText = `[${time}] ${message}`;
+      term.appendChild(line);
+      term.scrollTop = term.scrollHeight;
+    }
+
+    function updateOccupancy() {
+      const total = Object.keys(seatDatabase).length;
+      const occupied = Object.values(seatDatabase).filter(s => s.state !== 'FREE').length;
+      const pct = Math.round((occupied / total) * 100);
+      document.getElementById('occupancyBadge').innerText = `Occupancy: ${pct}%`;
+      return pct;
+    }
+
+    function calculateMultiplier() {
+      const strat = document.getElementById('pricingStrategySelect').value;
+      const occupancy = updateOccupancy();
+
+      if (strat === 'weekend') return 1.25;
+      if (strat === 'surge') {
+        if (occupancy >= 80) return 1.50;
+        if (occupancy >= 50) return 1.25;
+        if (occupancy >= 25) return 1.10;
+        return 1.00;
+      }
+      return 1.00;
+    }
+
+    function updateBillSummary() {
+      const multiplier = calculateMultiplier();
+      let baseTotal = 0;
+
+      selectedSeatIds.forEach(id => {
+        baseTotal += seatDatabase[id].price;
+      });
+
+      const surgeBase = baseTotal * multiplier;
+
+      let comboCost = 0;
+      if (document.getElementById('comboPopcorn').checked) comboCost += 280.00 * selectedSeatIds.size;
+      if (document.getElementById('comboCoke').checked) comboCost += 150.00 * selectedSeatIds.size;
+      if (document.getElementById('comboNachos').checked) comboCost += 220.00 * selectedSeatIds.size;
+
+      const grandTotal = selectedSeatIds.size > 0 ? (surgeBase + comboCost) : 0;
+
+      document.getElementById('summarySeats').innerText = selectedSeatIds.size > 0 ? Array.from(selectedSeatIds).join(', ') : 'None';
+      document.getElementById('summaryBasePrice').innerText = `₹ ${baseTotal.toFixed(2)}`;
+      document.getElementById('summaryMultiplier').innerText = `${multiplier.toFixed(2)}x (${document.getElementById('pricingStrategySelect').options[document.getElementById('pricingStrategySelect').selectedIndex].text})`;
+      document.getElementById('summaryCombos').innerText = `₹ ${comboCost.toFixed(2)}`;
+      document.getElementById('summaryTotal').innerText = `₹ ${grandTotal.toFixed(2)}`;
+
+      const btnHold = document.getElementById('btnHold');
+      btnHold.disabled = (selectedSeatIds.size === 0 || currentHoldToken !== null);
+    }
+
+    // SAGA STEP 1: HOLD SEATS (U3 & U5)
+    document.getElementById('btnHold').addEventListener('click', () => {
+      if (selectedSeatIds.size === 0) return;
+
+      const seatsToHold = Array.from(selectedSeatIds).sort();
+      const expiresAt = Date.now() + 10000; // 10s hold
+
+      // Check availability (Atomic verification)
+      for (const id of seatsToHold) {
+        if (seatDatabase[id].state !== 'FREE') {
+          logTerminal(`❌ Hold rejected: Seat ${id} is no longer available.`, 'error');
+          return;
+        }
+      }
+
+      // Apply hold state
+      seatsToHold.forEach(id => {
+        seatDatabase[id].state = 'HELD';
+        seatDatabase[id].heldBy = 'Current_User';
+        seatDatabase[id].expiresAt = expiresAt;
+      });
+
+      currentHoldToken = {
+        seats: seatsToHold,
+        expiresAt
+      };
+
+      logTerminal(`🔒 Step 1 [HOLD]: Acquired temporary hold for [${seatsToHold.join(', ')}]. Expiry: 10 seconds.`, 'warn');
+
+      // Update UI Stepper
+      document.getElementById('step1').className = 'saga-step completed';
+      document.getElementById('step2').className = 'saga-step active';
+      document.getElementById('btnHold').style.display = 'none';
+      document.getElementById('paymentActions').style.display = 'grid';
+      document.getElementById('btnTimeout').style.display = 'block';
+
+      renderSeats();
+
+      // Start countdown timer
+      clearInterval(holdTimerInterval);
+      holdTimerInterval = setInterval(() => {
+        const now = Date.now();
+        if (currentHoldToken && now > currentHoldToken.expiresAt) {
+          executeCompensatingRelease('Hold duration expired (10s timeout)');
+        } else {
+          renderSeats();
+        }
+      }, 500);
+    });
+
+    // SAGA COMPENSATING ACTION (U5)
+    function executeCompensatingRelease(reason) {
+      clearInterval(holdTimerInterval);
+      if (!currentHoldToken) return;
+
+      logTerminal(`⚠️ Saga Compensation: ${reason}. Releasing seats [${currentHoldToken.seats.join(', ')}] back to FREE.`, 'error');
+
+      currentHoldToken.seats.forEach(id => {
+        if (seatDatabase[id].state === 'HELD') {
+          seatDatabase[id].state = 'FREE';
+          seatDatabase[id].heldBy = null;
+          seatDatabase[id].expiresAt = null;
+        }
+      });
+
+      resetSagaUI();
+    }
+
+    function resetSagaUI() {
+      currentHoldToken = null;
+      selectedSeatIds.clear();
+      document.getElementById('step1').className = 'saga-step active';
+      document.getElementById('step2').className = 'saga-step';
+      document.getElementById('step3').className = 'saga-step';
+      document.getElementById('btnHold').style.display = 'block';
+      document.getElementById('paymentActions').style.display = 'none';
+      document.getElementById('btnTimeout').style.display = 'none';
+      renderSeats();
+    }
+
+    // SAGA STEP 2 & 3: PAYMENT SUCCESS
+    document.getElementById('btnPaySuccess').addEventListener('click', () => {
+      if (!currentHoldToken) return;
+      clearInterval(holdTimerInterval);
+
+      logTerminal(`💳 Step 2 [PAYMENT]: Payment successful via MockPaymentGateway. TxnRef: TXN-${Math.random().toString(36).substring(2, 9).toUpperCase()}`, 'info');
+
+      // Step 3: Confirm seats permanently (Single-Sale Invariant U1-2)
+      currentHoldToken.seats.forEach(id => {
+        seatDatabase[id].state = 'SOLD';
+        seatDatabase[id].heldBy = null;
+        seatDatabase[id].expiresAt = null;
+      });
+
+      document.getElementById('step2').className = 'saga-step completed';
+      document.getElementById('step3').className = 'saga-step completed';
+
+      logTerminal(`🎟️ Step 3 [CONFIRM]: Confirmed seats [${currentHoldToken.seats.join(', ')}] to SOLD. Ticket generated!`, 'success');
+
+      // Show Ticket Modal
+      showTicket(currentHoldToken.seats, document.getElementById('summaryTotal').innerText);
+
+      currentHoldToken = null;
+      selectedSeatIds.clear();
+      resetSagaUI();
+    });
+
+    // SAGA STEP 2: PAYMENT FAILURE (COMPENSATION)
+    document.getElementById('btnPayFail').addEventListener('click', () => {
+      executeCompensatingRelease('Bank declined transaction (Insufficient Funds)');
+    });
+
+    // SIMULATE TIMEOUT
+    document.getElementById('btnTimeout').addEventListener('click', () => {
+      executeCompensatingRelease('User timed out during payment entry');
+    });
+
+    function showTicket(seats, total) {
+      document.getElementById('ticketBookingId').innerText = 'BMS-' + Math.random().toString(36).substring(2, 10).toUpperCase();
+      document.getElementById('ticketSeats').innerText = seats.join(', ');
+
+      const combos = [];
+      if (document.getElementById('comboPopcorn').checked) combos.push('Jumbo Caramel Popcorn');
+      if (document.getElementById('comboCoke').checked) combos.push('Large Chilled Beverage');
+      if (document.getElementById('comboNachos').checked) combos.push('Salsa & Cheese Nachos');
+      document.getElementById('ticketCombos').innerText = combos.length > 0 ? combos.join(' + ') : 'None';
+
+      document.getElementById('ticketTotal').innerText = total;
+      document.getElementById('ticketModal').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('ticketModal').classList.remove('active');
+      renderSeats();
+    }
+
+    // U6: CONCURRENT FIRST-DAY-FIRST-SHOW RUSH ARENA
+    document.getElementById('btnRush').addEventListener('click', () => {
+      const rushSeats = ['A3', 'A4', 'B1'];
+      logTerminal(`⚡ Starting FDFS Concurrency Rush: 16 threads competing for [${rushSeats.join(', ')}]...`, 'info');
+
+      // Random delay simulating thread interleaving
+      let winnerFound = false;
+      const contestedSeat = 'A4';
+
+      for (let i = 1; i <= 16; i++) {
+        const user = `Rush_User_${i}`;
+        setTimeout(() => {
+          if (!winnerFound && seatDatabase[contestedSeat].state === 'FREE') {
+            winnerFound = true;
+            seatDatabase[contestedSeat].state = 'SOLD';
+            logTerminal(`  🟢 [WON LOCK] ${user} successfully held and confirmed contested Seat ${contestedSeat}!`, 'success');
+            renderSeats();
+          } else {
+            logTerminal(`  🔴 [CONFLICT] ${user} denied on Seat ${contestedSeat} (Atomic check failed: Seat already held/sold).`, 'error');
+          }
+        }, Math.random() * 500);
+      }
+    });
+
+    // EVENT LISTENERS
+    document.getElementById('pricingStrategySelect').addEventListener('change', updateBillSummary);
+    document.getElementById('comboPopcorn').addEventListener('change', updateBillSummary);
+    document.getElementById('comboCoke').addEventListener('change', updateBillSummary);
+    document.getElementById('comboNachos').addEventListener('change', updateBillSummary);
+
+    // Initial render
+    renderSeats();
+  </script>
+</body>
+</html>
